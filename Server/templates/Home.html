@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digital Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0d0d0d;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .dash {
+            width: 900px;
+            background: #111;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .speed {
+            font-size: 80px;
+            font-weight: bold;
+        }
+
+        .gear {
+            font-size: 80px;
+            font-weight: bold;
+        }
+
+        .gear_readout {
+			text-align: right;
+        }
+		
+		.rpm-header {
+			margin-top: 25px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 14px;
+			padding: 0 10px;
+		}
+
+		.rpm-value {
+			text-align: right;
+		}
+		
+        .rpm-bar {
+            margin-top: 5px;
+            height: 30px;
+            background: #222;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .rpm-fill {
+            height: 100%;
+            width: 0%;
+            background: lightblue;
+            transition: width 0.05s linear;
+        }
+
+        .bottom-row {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .gauge {
+            width: 30%;
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 30px;
+        }
+
+        .bar {
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: lightblue;
+            transition: width 0.05s linear;
+        }
+		
+		.icon-row {
+			margin-top: 35px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 10px;
+		}
+
+		.icon-row img {
+			width: 40px;
+			height: auto;
+			opacity: 0.25;
+			filter: grayscale(100%);
+			transition: 0.2s ease;
+		}
+
+		.icon-on {
+			opacity: 1 !important;
+			filter: none !important;
+		}
+
+		
+    </style>
+</head>
+<body>
+<div class="dash">
+    <div class="top-row">
+        <div>
+            <div class="speed" id="speed">0</div>
+            <div>KM/H</div>
+        </div>
+        <div class="gear_readout">
+			<div class="gear" id="gear">N</div>
+            <div>Gear</div>
+        </div>
+    </div>
+
+    <div class="rpm-header">
+		<div>RPM</div>
+		<div class="rpm-value" id="rpm">0</div>
+	</div>
+
+	<div class="rpm-bar">
+		<div class="rpm-fill" id="rpmFill"></div>
+	</div>
+
+    
+	<div class="bottom-row">
+        <div class="gauge">
+            <div>Fuel</div>
+            <div class="gauge-value" id="fuelText">0%</div>
+            <div class="bar">
+                <div class="bar-fill" id="fuelBar"></div>
+            </div>
+        </div>
+
+        <div class="gauge">
+            <div>Engine Temp</div>
+            <div class="gauge-value" id="engTemp">0°C</div>
+        </div>
+		
+        <div class="gauge">
+            <div>Oil Temp</div>
+            <div class="gauge-value" id="oilTemp">0°C</div>
+        </div>
+
+        <div class="gauge">
+            <div>Boost</div>
+            <div class="gauge-value" id="boost">0 PSI</div>
+        </div>
+    </div>
+	
+    <div class="bottom-row">
+        <div class="gauge">
+            <div>Throttle</div>
+            <div class="gauge-value" id="throttleText">0%</div>
+            <div class="bar">
+                <div class="bar-fill" id="throttleBar"></div>
+            </div>
+        </div>
+        <div class="gauge">
+            <div>Brake</div>
+            <div class="gauge-value" id="brakeText">0%</div>
+            <div class="bar">
+                <div class="bar-fill" id="brakeBar"></div>
+            </div>
+        </div>
+        <div class="gauge">
+            <div>Clutch</div>
+            <div class="gauge-value" id="clutchText">0%</div>
+            <div class="bar">
+                <div class="bar-fill" id="clutchBar"></div>
+            </div>
+        </div>
+    </div>
+	<div class="icon-row">
+		<img id="iconSignalL" src="/static/SignalL.png">
+		<img id="iconParking" src="/static/ParkingBrake.png">
+		<img id="iconEngine" src="/static/Engine.png">
+		<img id="iconABS" src="/static/ABS.png">
+		<img id="iconESC" src="/static/ESC.png">
+		<img id="iconTCS" src="/static/TSC.png">
+		<img id="iconLights" src="/static/HeadLights.png">
+		<img id="iconHighBeam" src="/static/HighBeam.png">
+		<img id="iconSignalR" src="/static/SignalR.png">
+	</div>
+
+</div>
+
+<script>
+function updateDash() {
+    fetch("/info")
+        .then(res => res.json())
+        .then(data => {
+
+            let speed = data.wheelSpeed * 3.6;
+            document.getElementById("speed").innerText = speed.toFixed(0);
+			
+            let rpm = data.rpm;
+            document.getElementById("rpm").innerText = rpm.toFixed(0);
+
+            let gear = data.gear;
+            if (gear === "-1") {
+				document.getElementById("gear").innerText = "R";
+			} else if (gear === "0") {
+				document.getElementById("gear").innerText = "N";
+			} else {
+				document.getElementById("gear").innerText = gear;
+			}
+
+            let rpmPercent = (data.rpm / data.rpmLimit) * 100;
+            document.getElementById("rpmFill").style.width = rpmPercent + "%";
+
+            let fuelPercent = data.fuel * 100;
+            document.getElementById("fuelText").innerText = fuelPercent.toFixed(0) + "%";
+            document.getElementById("fuelBar").style.width = fuelPercent + "%";
+
+            document.getElementById("engTemp").innerText =
+                data.engTemp.toFixed(1) + "°C";
+				
+            document.getElementById("oilTemp").innerText =
+                data.oilTemp.toFixed(1) + "°C";
+
+            document.getElementById("boost").innerText =
+                data.boost.toFixed(1) + " PSI";
+			
+			
+            let throttlePercent = data.throttle * 100;
+            document.getElementById("throttleText").innerText = throttlePercent.toFixed(0) + "%";
+            document.getElementById("throttleBar").style.width = throttlePercent + "%";
+			
+            let brakePercent = data.brake * 100;
+            document.getElementById("brakeText").innerText = brakePercent.toFixed(0) + "%";
+            document.getElementById("brakeBar").style.width = brakePercent + "%";
+			
+            let clutchPercent = data.clutch * 100;
+            document.getElementById("clutchText").innerText = clutchPercent.toFixed(0) + "%";
+            document.getElementById("clutchBar").style.width = clutchPercent + "%";
+			
+			function setIcon(id, state) {
+				const el = document.getElementById(id);
+				if (state === 0) {
+					el.classList.remove("icon-on");
+				} else {
+					el.classList.add("icon-on");
+				}
+			}
+
+			setIcon("iconABS", data.abs);
+			setIcon("iconEngine", data.checkengine);
+			setIcon("iconESC", data.esc);
+			setIcon("iconParking", data.parkingbrake);
+			setIcon("iconSignalL", data.signal_L);
+			setIcon("iconSignalR", data.signal_R);
+			setIcon("iconTCS", data.tcs);
+			
+			if (data.lights === 0) {
+				setIcon("iconLights", 0);
+				setIcon("iconHighBeam", 0);
+			} else if (data.lights === 1) {
+				setIcon("iconLights", 1);
+				setIcon("iconHighBeam", 0);
+			} else if (data.lights === 2) {
+				setIcon("iconLights", 1);
+				setIcon("iconHighBeam", 1);
+			}
+			
+        })
+        .catch(err => console.error(err));
+}
+
+setInterval(updateDash, 50);
+</script>
+</body>
+</html>
