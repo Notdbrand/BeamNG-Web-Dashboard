@@ -24,3 +24,10 @@ Start the server by running 'server.py'.
 
 # Connecting
 Use the IP address of the hosting computer and the port 5000 (Default) in a web browser to view the dashboard.
+
+# Tested:  
+OS: Windows 11  
+BeamNG Drive: v0.38.5.0  
+
+Example:  
+
