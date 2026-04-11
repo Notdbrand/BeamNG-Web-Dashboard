@@ -29,5 +29,6 @@ Use the IP address of the hosting computer and the port 5000 (Default) in a web 
 OS: Windows 11  
 BeamNG Drive: v0.38.5.0  
 
-Example:  
+# Dashboard Webview:  
+<img width="auto" height="320" alt="image" src="https://github.com/user-attachments/assets/5aaaccdb-c09f-462d-9f60-ae1faa9e4d81" />
 
