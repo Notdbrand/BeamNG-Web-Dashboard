@@ -5,21 +5,42 @@
     <style>
         body {
             margin: 0;
-            background: #0d0d0d;
-            color: white;
+            background: var(--bng-theme-bg);
+            color: var(--bng-theme-text);
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+			overflow-x: hidden;
+			overflow-y: hidden;
         }
-
+		
+		body.light {
+			--bng-theme-bg: #fff;
+			--bng-theme-fg: #fcfcfc;
+			--bng-theme-text: #000;
+			--bng-theme-a-hover: #DF5900;
+			--bng-theme-input-bg: #DADEE8;
+			--shadow: rgba(110, 110, 110, 0.515);
+		}
+		
+		body.dark {
+			--bng-theme-bg: #1b2c37;
+			--bng-theme-fg: #2c3f4c;
+			--bng-theme-text: #fff;
+			--bng-theme-a-hover: #DF5900;
+			--bng-theme-input-bg: #DADEE8;
+			--shadow: 0 0 40px rgba(0,0,0,0.8);
+		}
+		
         .dash {
             width: 900px;
-            background: #111;
+            background: var(--bng-theme-fg);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
+			transform: scale(1);
         }
 
         .top-row {
@@ -58,7 +79,7 @@
         .rpm-bar {
             margin-top: 5px;
             height: 30px;
-            background: #222;
+            background: var(--bng-theme-input-bg);
             border-radius: 15px;
             overflow: hidden;
         }
@@ -66,7 +87,7 @@
         .rpm-fill {
             height: 100%;
             width: 0%;
-            background: lightblue;
+            background: var(--bng-theme-a-hover);
             transition: width 0.05s linear;
         }
 
@@ -87,7 +108,7 @@
 
         .bar {
             height: 10px;
-            background: #222;
+            background: var(--bng-theme-input-bg);
             border-radius: 5px;
             margin-top: 5px;
             overflow: hidden;
@@ -96,7 +117,7 @@
         .bar-fill {
             height: 100%;
             width: 0%;
-            background: lightblue;
+            background: var(--bng-theme-a-hover);
             transition: width 0.05s linear;
         }
 		
@@ -121,11 +142,81 @@
 			filter: none !important;
 		}
 
+		/* Settings Window */
+		.window {
+			display: block;
+			position: absolute;
+			background-color: var(--bng-theme-bg);
+			color: var(--bng-theme-text);
+			padding: 15px;
+			border-radius: 20px;
+			top: calc(100vh + 300px);
+			box-shadow: 0 0 25px rgba(0,0,0,0.8);
+			transition: background-color 0.3s ease, color 0.3s ease, top 0.5s ease;
+		}
+
+		.window h2 {
+			margin: 10px 0 5px 0;
+		}
+
+		.window-content {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.window-content select {
+			background-color: var(--bng-theme-bg);
+			color: var(--bng-theme-text);
+			border-radius: 5px;
+			margin-bottom: 5px;
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+
+		.window-options {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;;
+		}
+		
+		button {
+			background-color: var(--bng-theme-bg);
+			color: var(--bng-theme-text);
+			border-radius: 5px;
+			border: 2px solid black; 
+			margin-top: 10px;
+			transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+		}
+
+		button:hover {
+			transform: scale(1.02);
+			box-shadow: 1px 5px 5px var(--shadow);
+			transition: box-shadow 0.2s ease, transform 0.2s ease;
+		}
+		
+		.dash-scale {
+            background: var(--bng-theme-a-hover);
+            border-radius: 5px;
+		}
+		
+		/* Settings Button */
+		.icons {
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+		}
+
+		.icons img {
+			width: 25px;
+			height: 25px;
+		}
 		
     </style>
 </head>
-<body>
-<div class="dash">
+<body onload="loadSettings();" class="dark">
+<div class="dash" id="dash">
     <div class="top-row">
         <div>
             <div class="speed" id="speed">0</div>
@@ -206,12 +297,39 @@
 		<img id="iconHighBeam" src="/static/HighBeam.png">
 		<img id="iconSignalR" src="/static/SignalR.png">
 	</div>
+</div>
 
+<div class="icons" id="icons">
+	<img src="/static/Settings.png" alt="Settings" onclick="openWindow('settingsWindow')">
+</div>
+<div class="window" id="settingsWindow">
+	<div class="window-content">
+		<h2>Settings</h2>
+		<label for="mode">Mode:</label>
+		<select name="mode" id="mode" onchange="updateMode()">
+			<option value="dark">Dark Mode</option>
+			<option value="light">Light Mode</option>
+		</select>
+		<label for="debugmode">Debug:</label>
+		<select name="debugmode" id="debugmode" onchange="updatedebugMode()">
+			<option value="/info">Debug Off</option>
+			<option value="/debug">Debug On</option>
+		</select>
+		<label for="scale">Dash Scale:</label>
+		<input class="dash-scale" type="range" step="0.01" min="0" max="3" value="1" class="slider" id="scale" onchange="updateScale()">
+		<label for="translateX">Move X:</label>
+		<input class="dash-scale" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateX" onchange="updateScale()">
+		<label for="translateY">Move Y:</label>
+		<input class="dash-scale" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateY" onchange="updateScale()">
+		<button onclick="resetSettings()">Reset</button>
+		<button onclick="closeWindow('settingsWindow')">Done</button>
+	</div>
 </div>
 
 <script>
 function updateDash() {
-    fetch("/info")
+	var updateDashURL = localStorage.getItem("Debugmode");
+    fetch(updateDashURL)
         .then(res => res.json())
         .then(data => {
 
@@ -289,6 +407,87 @@ function updateDash() {
 			
         })
         .catch(err => console.error(err));
+}
+
+// Loads settings
+function loadSettings() {
+  var mode = localStorage.getItem("Mode");
+  var debugmode = localStorage.getItem("Debugmode");
+  var scale = localStorage.getItem("Scale");
+  var translateX = localStorage.getItem("TranslateX");
+  var translateY = localStorage.getItem("TranslateY");
+  
+  if (mode == null) {
+    localStorage.setItem('Mode', 'light');
+    mode = 'light';
+  }
+  if (debugmode == null) {
+    localStorage.setItem('Debugmode', '/info');
+    debugmode = '/info';
+  }
+  if (scale == null) {
+    localStorage.setItem('Scale', 1);
+    scale = 1;
+  }
+  if (translateX == null) {
+    localStorage.setItem('TranslateX', 0);
+    translateX = 0;
+  }
+  if (translateY == null) {
+    localStorage.setItem('TranslateY', 0);
+    translateY = 0;
+  }
+  
+  document.body.className = mode;
+  document.getElementById("mode").value = mode;
+  document.getElementById("scale").value = scale;
+  document.getElementById("debugmode").value = debugmode;
+  document.getElementById("translateX").value = translateX;
+  document.getElementById("translateY").value = translateY;
+  document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
+}
+
+// Open and Close windows
+function openWindow(window) {
+  const startedWindow = document.getElementById(window);
+  startedWindow.style.top = startedWindow.style.display = 'calc(50vh - ' + startedWindow.offsetHeight/2 + 'px)';
+}
+
+function closeWindow(window) {
+  const closingWindow = document.getElementById(window);
+  closingWindow.style.top = 'calc(100vh + 300px)';
+}
+
+document.addEventListener('click', (event) => {
+  if (!settingsWindow.contains(event.target) && !icons.contains(event.target)) {
+    settingsWindow.style.top = 'calc(100vh + 300px)';
+  }
+});
+
+// Settings
+function updateMode() {
+  const mode = document.getElementById("mode").value;
+  localStorage.setItem('Mode', mode);
+  document.body.className = mode;
+}
+function updatedebugMode() {
+  const debugmode = document.getElementById("debugmode").value;
+  localStorage.setItem('Debugmode', debugmode);
+}
+function updateScale() {
+  const scale = document.getElementById("scale").value;
+  const translateX = document.getElementById("translateX").value;
+  const translateY = document.getElementById("translateY").value;
+  localStorage.setItem('Scale', scale);
+  localStorage.setItem('TranslateX', translateX);
+  localStorage.setItem('TranslateY', translateY);
+  document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
+}
+function resetSettings() {
+    localStorage.setItem('Scale', 1);
+    localStorage.setItem('TranslateX', 0);
+    localStorage.setItem('TranslateY', 0);
+	location.reload();
 }
 
 setInterval(updateDash, 50);
