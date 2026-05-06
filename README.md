@@ -30,5 +30,11 @@ OS: Windows 11
 BeamNG Drive: v0.38.5.0  
 
 # Dashboard Webview:  
-<img width="auto" height="320" alt="image" src="https://github.com/user-attachments/assets/5aaaccdb-c09f-462d-9f60-ae1faa9e4d81" />
+## Dark Mode:  
+<img width="auto" height="320" alt="Screenshot 2026-05-06 154932" src="https://github.com/user-attachments/assets/de56bec3-e788-40d4-a180-e94e599f37d6" />  
 
+## Light Mode:  
+<img width="auto" height="320" alt="Screenshot 2026-05-06 154953" src="https://github.com/user-attachments/assets/4b81dcda-ae73-4fad-abd4-0b364e705ab0" />  
+
+## Settings:  
+<img width="auto" height="320" alt="Screenshot 2026-05-06 155000" src="https://github.com/user-attachments/assets/04d671c1-99a5-490f-b3fe-0dd93263d31e" />
