@@ -31,7 +31,16 @@
 			--bng-theme-text: #fff;
 			--bng-theme-a-hover: #DF5900;
 			--bng-theme-input-bg: #DADEE8;
-			--shadow: 0 0 40px rgba(0,0,0,0.8);
+			--shadow: rgba(0, 0, 0, 0.8);
+		}
+		
+		body.oled {
+			--bng-theme-bg: #000000;
+			--bng-theme-fg: #000000;
+			--bng-theme-text: #fff;
+			--bng-theme-a-hover: #DF5900;
+			--bng-theme-input-bg: #303030;
+			--shadow: rgba(0, 0, 0, 0.8);
 		}
 		
         .dash {
@@ -182,7 +191,7 @@
 			background-color: var(--bng-theme-bg);
 			color: var(--bng-theme-text);
 			border-radius: 5px;
-			border: 2px solid black; 
+			border: 2px solid var(--bng-theme-text); 
 			margin-top: 10px;
 			transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 		}
@@ -193,10 +202,10 @@
 			transition: box-shadow 0.2s ease, transform 0.2s ease;
 		}
 		
-		.dash-scale {
-            background: var(--bng-theme-a-hover);
+		.settings-slider {
             border-radius: 5px;
 		}
+		
 		
 		/* Settings Button */
 		.icons {
@@ -307,8 +316,9 @@
 		<h2>Settings</h2>
 		<label for="mode">Mode:</label>
 		<select name="mode" id="mode" onchange="updateMode()">
-			<option value="dark">Dark Mode</option>
 			<option value="light">Light Mode</option>
+			<option value="dark">Dark Mode</option>
+			<option value="oled">OLED Mode</option>
 		</select>
 		<label for="debugmode">Debug:</label>
 		<select name="debugmode" id="debugmode" onchange="updatedebugMode()">
@@ -316,11 +326,11 @@
 			<option value="/debug">Debug On</option>
 		</select>
 		<label for="scale">Dash Scale:</label>
-		<input class="dash-scale" type="range" step="0.01" min="0" max="3" value="1" class="slider" id="scale" onchange="updateScale()">
+		<input class="settings-slider" type="range" step="0.01" min="0" max="3" value="1" class="slider" id="scale" onchange="updateScale()">
 		<label for="translateX">Move X:</label>
-		<input class="dash-scale" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateX" onchange="updateScale()">
+		<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateX" onchange="updateScale()">
 		<label for="translateY">Move Y:</label>
-		<input class="dash-scale" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateY" onchange="updateScale()">
+		<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateY" onchange="updateScale()">
 		<button onclick="resetSettings()">Reset</button>
 		<button onclick="closeWindow('settingsWindow')">Done</button>
 	</div>
