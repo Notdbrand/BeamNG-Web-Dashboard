@@ -30,6 +30,9 @@ OS: Windows 11
 BeamNG Drive: v0.38.5.0  
 
 # Dashboard Webview:  
+## OLED Mode:  
+<img width="auto" height="320" alt="image" src="https://github.com/user-attachments/assets/5f5ee778-3747-4089-8622-1d6241a40028" />  
+
 ## Dark Mode:  
 <img width="auto" height="320" alt="Screenshot 2026-05-06 154932" src="https://github.com/user-attachments/assets/de56bec3-e788-40d4-a180-e94e599f37d6" />  
 
