@@ -14,6 +14,7 @@ test_gears_str = "N"
 test_bars_float = 0.0
 test_Lights_float = 0.0
 test_Lights_int = 0
+test_Ignition_int = 0
 testDataAge = 0
 
 def receiveData():
@@ -27,7 +28,7 @@ def receiveData():
 
     if data is None:
         return []
-    outsim_pack = struct.unpack("16s4s13f9I", data)
+    outsim_pack = struct.unpack("16s4s13f10I1f", data)
     car_data = {
         # String 16 characters long
         "car": outsim_pack[0].decode("utf-8"),
@@ -50,7 +51,7 @@ def receiveData():
         "clutch": outsim_pack[13],
         "lights": outsim_pack[14],
         
-        # 9 Intger values
+        # 10 Intger values
         "parkingbrake": outsim_pack[15],
         "signal_L": outsim_pack[16],
         "signal_R": outsim_pack[17],
@@ -59,7 +60,11 @@ def receiveData():
         "checkengine": outsim_pack[20],
         "esc": outsim_pack[21],
         "tcs": outsim_pack[22],
-        "ev": outsim_pack[23]
+        "ignitionLevel": outsim_pack[23],
+        "ev": outsim_pack[24],
+        
+        # 1 Float value. Time
+        "time": outsim_pack[25]
     }
     return car_data
 
@@ -68,6 +73,7 @@ def updateTestData():
     global test_gears_str
     global test_bars_float
     global test_Lights_float
+    global test_Ignition_int
     global testDataAge
     
     if test_bars_float <= 1:
@@ -132,7 +138,14 @@ def testData():
         "checkengine": test_Lights_int,
         "esc": test_Lights_int,
         "tcs": test_Lights_int,
-        "ev": test_Lights_int
+        
+        # 1 Intger Value
+        # 0 - 3
+        "ignitionLevel": test_Ignition_int,
+        
+        "ev": test_Lights_int,
+        
+        "time": test_bars_float
     }
     return car_data
     

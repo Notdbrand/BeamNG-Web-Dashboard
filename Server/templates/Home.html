@@ -14,6 +14,7 @@
             height: 100vh;
 			overflow-x: hidden;
 			overflow-y: hidden;
+			transition: background-color 1s ease, color 1s ease;
         }
 		
 		body.light {
@@ -22,6 +23,7 @@
 			--bng-theme-text: #000;
 			--bng-theme-a-hover: #DF5900;
 			--bng-theme-input-bg: #DADEE8;
+			--invert: 0;
 			--shadow: rgba(110, 110, 110, 0.515);
 		}
 		
@@ -31,6 +33,7 @@
 			--bng-theme-text: #fff;
 			--bng-theme-a-hover: #DF5900;
 			--bng-theme-input-bg: #DADEE8;
+			--invert: 1;
 			--shadow: rgba(0, 0, 0, 0.8);
 		}
 		
@@ -40,7 +43,12 @@
 			--bng-theme-text: #fff;
 			--bng-theme-a-hover: #DF5900;
 			--bng-theme-input-bg: #303030;
+			--invert: 1;
 			--shadow: rgba(0, 0, 0, 0.8);
+		}
+		
+		body * {
+		transition: background-color 1s ease, color 1s ease, border-color 1s ease;
 		}
 		
         .dash {
@@ -161,7 +169,7 @@
 			border-radius: 20px;
 			top: calc(100vh + 300px);
 			box-shadow: 0 0 25px rgba(0,0,0,0.8);
-			transition: background-color 0.3s ease, color 0.3s ease, top 0.5s ease;
+			transition: background-color 0.3s ease, color 0.3s ease, top 0.5s ease, height 0.5s ease;
 		}
 
 		.window h2 {
@@ -206,7 +214,59 @@
             border-radius: 5px;
 		}
 		
+		.settings-dropdown-selector {
+			user-select: none;
+		}
 		
+		.settings-dropdown {
+			max-height: 0px;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			transition: max-height 0.2s ease;
+			padding: 0 10px;
+		}
+		.dash-settings-dropdown {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+		}
+		.dash-settings-dropdown-sliders {
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.dash-settings-dropdown-layout {
+		
+		}
+		.dashboard-item {
+			border: 1px solid var(--bng-theme-text);
+			padding: 5px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.dashboard-item-controls {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+		}
+
+		.dashboard-item button {
+			margin: 0;
+			width: 20px;
+			height: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.dashboard-item-controls-image {
+			width: 20px;
+			height: auto;
+			filter: invert(var(--invert))
+		}
 		/* Settings Button */
 		.icons {
 			display: flex;
@@ -220,13 +280,14 @@
 		.icons img {
 			width: 25px;
 			height: 25px;
+			filter: invert(var(--invert))
 		}
 		
     </style>
 </head>
 <body onload="loadSettings();" class="dark">
 <div class="dash" id="dash">
-    <div class="top-row">
+    <div class="top-row" id="speed-gear">
         <div>
             <div class="speed" id="speed">0</div>
             <div>KM/H</div>
@@ -237,17 +298,17 @@
         </div>
     </div>
 
-    <div class="rpm-header">
+    <div class="rpm-header" id="rpm-info">
 		<div>RPM</div>
 		<div class="rpm-value" id="rpm">0</div>
 	</div>
 
-	<div class="rpm-bar">
+	<div class="rpm-bar" id="rpm-bar">
 		<div class="rpm-fill" id="rpmFill"></div>
 	</div>
 
     
-	<div class="bottom-row">
+	<div class="bottom-row" id="car-info">
         <div class="gauge">
             <div>Fuel</div>
             <div class="gauge-value" id="fuelText">0%</div>
@@ -272,7 +333,7 @@
         </div>
     </div>
 	
-    <div class="bottom-row">
+    <div class="bottom-row" id="pedal-info">
         <div class="gauge">
             <div>Throttle</div>
             <div class="gauge-value" id="throttleText">0%</div>
@@ -295,7 +356,7 @@
             </div>
         </div>
     </div>
-	<div class="icon-row">
+	<div class="icon-row" id="car-lights">
 		<img id="iconSignalL" src="/static/SignalL.png">
 		<img id="iconParking" src="/static/ParkingBrake.png">
 		<img id="iconEngine" src="/static/Engine.png">
@@ -313,37 +374,94 @@
 </div>
 <div class="window" id="settingsWindow">
 	<div class="window-content">
-		<h2>Settings</h2>
-		<label for="mode">Mode:</label>
-		<select name="mode" id="mode" onchange="updateMode()">
-			<option value="light">Light Mode</option>
-			<option value="dark">Dark Mode</option>
-			<option value="oled">OLED Mode</option>
-		</select>
-		<label for="debugmode">Debug:</label>
-		<select name="debugmode" id="debugmode" onchange="updatedebugMode()">
-			<option value="/info">Debug Off</option>
-			<option value="/debug">Debug On</option>
-		</select>
-		<label for="scale">Dash Scale:</label>
-		<input class="settings-slider" type="range" step="0.01" min="0" max="3" value="1" class="slider" id="scale" onchange="updateScale()">
-		<label for="translateX">Move X:</label>
-		<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateX" onchange="updateScale()">
-		<label for="translateY">Move Y:</label>
-		<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateY" onchange="updateScale()">
-		<button onclick="resetSettings()">Reset</button>
+		<div class="settings-dropdown-selector" onclick="toggleDropdown('mainSettings')">
+			<h2>Main Settings ></h2>
+		</div>
+		<div class="settings-dropdown" id="mainSettings">
+			<label for="measurement">Measurement System:</label>
+			<select name="measurement" id="measurement" onchange="updateMeasurementSystem()">
+				<option value="metric">Metric</option>
+				<option value="imperial">Imperial</option>
+			</select>
+			<label for="mode">Mode:</label>
+			<select name="mode" id="mode" onchange="updateMode()">
+				<option value="light">Light Mode</option>
+				<option value="dark">Dark Mode</option>
+				<option value="oled">OLED Mode</option>
+				<option value="auto">Auto</option>
+			</select>
+			<label for="debugmode">Debug:</label>
+			<select name="debugmode" id="debugmode" onchange="updatedebugMode()">
+				<option value="/info">Debug Off</option>
+				<option value="/debug">Debug On</option>
+			</select>
+		</div>
+		
+		<div class="settings-dropdown-selector" onclick="toggleDropdown('dashSettings')">
+			<h2>Dash Settings ></h2>
+		</div>
+		<div class="settings-dropdown" id="dashSettings">
+			<div class="dash-settings-dropdown">
+				<div class="dash-settings-dropdown-layout">	
+					<label>Dashboard Layout:</label>
+					<div id="dashboardEditor"></div>
+				</div>
+				<div class="dash-settings-dropdown-sliders">
+					<label for="scale">Dash Scale:</label>
+					<input class="settings-slider" type="range" step="0.01" min="0" max="3" value="1" class="slider" id="scale" onchange="updateScale()">
+					<label for="translateX">Move X:</label>
+					<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateX" onchange="updateScale()">
+					<label for="translateY">Move Y:</label>
+					<input class="settings-slider" type="range" step="1" min="-1000" max="1000" value="0" class="slider" id="translateY" onchange="updateScale()">
+				</div>
+			</div>
+			<button onclick="resetSettings()">Reset</button>
+		</div>
 		<button onclick="closeWindow('settingsWindow')">Done</button>
 	</div>
 </div>
 
 <script>
+function updateAutoTheme(beamNGTime) {
+    // Time (Rabbit taping clock meme)
+    // 0.00 = 12:00
+    // 0.25 = 18:00
+    // 0.50 = 00:00
+    // 0.75 = 06:00
+
+    let hours = ((beamNGTime + 0.5) % 1.0) * 24;
+
+    let theme;
+
+    // 06:00 through 18:00 = Light
+    // 18:00 through 06:00 = OLED
+    if (hours >= 6 && hours <= 18) {
+        theme = "light";
+    } else {
+        theme = "oled";
+    }
+
+    document.body.className = theme;
+}
+
 function updateDash() {
 	var updateDashURL = localStorage.getItem("Debugmode");
     fetch(updateDashURL)
         .then(res => res.json())
         .then(data => {
-
-            let speed = data.wheelSpeed * 3.6;
+			let mode = localStorage.getItem("Mode");
+			if (mode === "auto" && typeof data.time === "number") {
+				updateAutoTheme(data.time);
+			}
+			var measurementOption = localStorage.getItem("Measurement");
+			if (measurementOption === "metric") {
+				var speed = data.wheelSpeed * 3.6;
+			} else if (measurementOption === "imperial") {
+				var speed = data.wheelSpeed / 0.44704;
+			} else { 
+				var speed = data.wheelSpeed * 3.6;
+			}
+			
             document.getElementById("speed").innerText = speed.toFixed(0);
 			
             let rpm = data.rpm;
@@ -421,83 +539,238 @@ function updateDash() {
 
 // Loads settings
 function loadSettings() {
-  var mode = localStorage.getItem("Mode");
-  var debugmode = localStorage.getItem("Debugmode");
-  var scale = localStorage.getItem("Scale");
-  var translateX = localStorage.getItem("TranslateX");
-  var translateY = localStorage.getItem("TranslateY");
-  
-  if (mode == null) {
-    localStorage.setItem('Mode', 'light');
-    mode = 'light';
-  }
-  if (debugmode == null) {
-    localStorage.setItem('Debugmode', '/info');
-    debugmode = '/info';
-  }
-  if (scale == null) {
-    localStorage.setItem('Scale', 1);
-    scale = 1;
-  }
-  if (translateX == null) {
-    localStorage.setItem('TranslateX', 0);
-    translateX = 0;
-  }
-  if (translateY == null) {
-    localStorage.setItem('TranslateY', 0);
-    translateY = 0;
-  }
-  
-  document.body.className = mode;
-  document.getElementById("mode").value = mode;
-  document.getElementById("scale").value = scale;
-  document.getElementById("debugmode").value = debugmode;
-  document.getElementById("translateX").value = translateX;
-  document.getElementById("translateY").value = translateY;
-  document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
+	var mode = localStorage.getItem("Mode");
+	var measurement = localStorage.getItem("Measurement");
+	var debugmode = localStorage.getItem("Debugmode");
+	var scale = localStorage.getItem("Scale");
+	var translateX = localStorage.getItem("TranslateX");
+	var translateY = localStorage.getItem("TranslateY");
+
+	if (mode == null) {
+		localStorage.setItem('Mode', 'light');
+		mode = 'light';
+	}
+	if (measurement == null) {
+		localStorage.setItem('Measurement', 'metric');
+		measurement = 'metric';
+	}
+	if (debugmode == null) {
+		localStorage.setItem('Debugmode', '/info');
+		debugmode = '/info';
+	}
+	if (scale == null) {
+		localStorage.setItem('Scale', 1);
+		scale = 1;
+	}
+	if (translateX == null) {
+		localStorage.setItem('TranslateX', 0);
+		translateX = 0;
+	}
+	if (translateY == null) {
+		localStorage.setItem('TranslateY', 0);
+		translateY = 0;
+	}
+	
+	if (mode === "auto") {
+		document.body.className = "oled";
+	} else {
+		document.body.className = mode;
+	}
+	document.getElementById("measurement").value = measurement;
+	document.getElementById("mode").value = mode;
+	document.getElementById("scale").value = scale;
+	document.getElementById("debugmode").value = debugmode;
+	document.getElementById("translateX").value = translateX;
+	document.getElementById("translateY").value = translateY;
+	document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
+	applyDashboardLayout();
 }
 
 // Open and Close windows
 function openWindow(window) {
-  const startedWindow = document.getElementById(window);
-  startedWindow.style.top = startedWindow.style.display = 'calc(50vh - ' + startedWindow.offsetHeight/2 + 'px)';
+	const startedWindow = document.getElementById(window);
+	startedWindow.style.top = 'calc(50vh - ' + startedWindow.offsetHeight/2 + 'px)';
 }
 
 function closeWindow(window) {
-  const closingWindow = document.getElementById(window);
-  closingWindow.style.top = 'calc(100vh + 300px)';
+	const closingWindow = document.getElementById(window);
+	closingWindow.style.top = 'calc(100vh + 300px)';
+	closeDropdown('mainSettings');
+	closeDropdown('dashSettings');
 }
 
 document.addEventListener('click', (event) => {
-  if (!settingsWindow.contains(event.target) && !icons.contains(event.target)) {
-    settingsWindow.style.top = 'calc(100vh + 300px)';
-  }
+	if (!settingsWindow.contains(event.target) && !icons.contains(event.target) && dashboardEditor.contains(event.target)) {
+		settingsWindow.style.top = 'calc(100vh + 300px)';
+		closeDropdown('mainSettings');
+		closeDropdown('dashSettings');
+	}
 });
+
+// Open and Close Settings Dropdown
+function toggleDropdown(dropdown) {
+	const selectedDropdown = document.getElementById(dropdown);
+	if (selectedDropdown.style.maxHeight && selectedDropdown.style.maxHeight !== '0px') {
+		selectedDropdown.style.maxHeight = '0px';
+	} else {
+		selectedDropdown.style.maxHeight = selectedDropdown.scrollHeight + 'px';
+	}
+		setTimeout(() => openWindow('settingsWindow'), 200);
+}
+
+function closeDropdown(dropdown) {
+	const selectedDropdown = document.getElementById(dropdown);
+	selectedDropdown.style.maxHeight = '0px';
+}
 
 // Settings
 function updateMode() {
-  const mode = document.getElementById("mode").value;
-  localStorage.setItem('Mode', mode);
-  document.body.className = mode;
+    const mode = document.getElementById("mode").value;
+    localStorage.setItem('Mode', mode);
+    if (mode === "auto") {
+        return;
+    }
+    document.body.className = mode;
 }
+
+function updateMeasurementSystem() {
+	const measurement = document.getElementById("measurement").value;
+	localStorage.setItem('Measurement', measurement);
+}
+
 function updatedebugMode() {
-  const debugmode = document.getElementById("debugmode").value;
-  localStorage.setItem('Debugmode', debugmode);
+	const debugmode = document.getElementById("debugmode").value;
+	localStorage.setItem('Debugmode', debugmode);
 }
+
 function updateScale() {
-  const scale = document.getElementById("scale").value;
-  const translateX = document.getElementById("translateX").value;
-  const translateY = document.getElementById("translateY").value;
-  localStorage.setItem('Scale', scale);
-  localStorage.setItem('TranslateX', translateX);
-  localStorage.setItem('TranslateY', translateY);
-  document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
+	const scale = document.getElementById("scale").value;
+	const translateX = document.getElementById("translateX").value;
+	const translateY = document.getElementById("translateY").value;
+	localStorage.setItem('Scale', scale);
+	localStorage.setItem('TranslateX', translateX);
+	localStorage.setItem('TranslateY', translateY);
+	document.getElementById("dash").style.transform = 'scale('+scale+') translateX('+translateX+'px) translateY('+translateY+'px)';
 }
+
 function resetSettings() {
     localStorage.setItem('Scale', 1);
     localStorage.setItem('TranslateX', 0);
     localStorage.setItem('TranslateY', 0);
+	localStorage.removeItem('DashboardOrder');
 	location.reload();
+}
+
+// Dashboard layout items
+const dashboardSections = [
+	{
+		id: "speed-gear",
+		name: "Speed / Gear"
+	},
+	{
+		id: "rpm-info",
+		name: "RPM Info"
+	},
+	{
+		id: "rpm-bar",
+		name: "RPM Bar"
+	},
+	{
+		id: "car-info",
+		name: "Car Info"
+	},
+	{
+		id: "pedal-info",
+		name: "Pedal Info"
+	},
+	{
+		id: "car-lights",
+		name: "Dash Lights"
+	}
+];
+
+function getDashboardOrder() {
+	const saved = localStorage.getItem("DashboardOrder");
+	if (saved) {
+		return JSON.parse(saved);
+	}
+	return dashboardSections.map(section => ({
+		id: section.id,
+		hidden: false
+	}));
+}
+
+function saveDashboardOrder(order) {
+	localStorage.setItem("DashboardOrder", JSON.stringify(order));
+}
+
+function applyDashboardLayout() {
+	const order = getDashboardOrder();
+	const dash = document.getElementById("dash");
+
+	order.forEach(item => {
+		const element = document.getElementById(item.id);
+
+		if (!element) return;
+
+		dash.appendChild(element);
+
+		if (item.hidden) {
+			element.style.display = "none";
+		} else {
+			element.style.display = "";
+		}
+	});
+
+	renderDashboardEditor();
+}
+
+function moveDashboardItem(index, direction) {
+	const order = getDashboardOrder();
+	const newIndex = index + direction;
+
+	if (newIndex < 0 || newIndex >= order.length) return;
+
+	[order[index], order[newIndex]] = [order[newIndex], order[index]];
+
+	saveDashboardOrder(order);
+	applyDashboardLayout();
+}
+
+function toggleDashboardVisibility(id) {
+	const order = getDashboardOrder();
+	const item = order.find(x => x.id === id);
+	
+	if (!item) return;
+
+	item.hidden = !item.hidden;
+	saveDashboardOrder(order);
+	applyDashboardLayout();
+}
+
+function renderDashboardEditor() {
+	const editor = document.getElementById("dashboardEditor");
+	editor.innerHTML = "";
+	const order = getDashboardOrder();
+
+	order.forEach((item, index) => {
+		const info = dashboardSections.find(x => x.id === item.id);
+		const div = document.createElement("div");
+		div.className = "dashboard-item";
+		div.innerHTML = `
+			<div>
+				${info.name}
+			</div>
+			<div class="dashboard-item-controls">
+				<button onclick="moveDashboardItem(${index}, -1)">↑</button>
+				<button onclick="moveDashboardItem(${index}, 1)">↓</button>
+				<button onclick="toggleDashboardVisibility('${item.id}')">
+					${item.hidden ? '<img class="dashboard-item-controls-image" src="/static/eye-off.png">' : '<img class="dashboard-item-controls-image" src="/static/eye.png">'}
+				</button>
+			</div>
+		`;
+		editor.appendChild(div);
+	});
 }
 
 setInterval(updateDash, 50);
