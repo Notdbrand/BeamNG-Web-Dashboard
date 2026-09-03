@@ -25,9 +25,9 @@ Start the server by running 'server.py'.
 # Connecting
 Use the IP address of the hosting computer and the port 5000 (Default) in a web browser to view the dashboard.
 
-# Tested:  
+# Tested On:  
 OS: Windows 11  
-BeamNG Drive: v0.38.5.0  
+BeamNG Drive: v0.39.4.0  
 
 # Dashboard Webview:  
 ## OLED Mode:  
@@ -40,4 +40,5 @@ BeamNG Drive: v0.38.5.0
 <img width="auto" height="320" alt="Screenshot 2026-05-06 154953" src="https://github.com/user-attachments/assets/4b81dcda-ae73-4fad-abd4-0b364e705ab0" />  
 
 ## Settings:  
-<img width="auto" height="320" alt="Screenshot 2026-05-06 155000" src="https://github.com/user-attachments/assets/04d671c1-99a5-490f-b3fe-0dd93263d31e" />
+<img width="auto" height="420" alt="image" src="https://github.com/user-attachments/assets/52de4e19-3ce2-4fd5-b57a-e8c6a5df343e" />
+
