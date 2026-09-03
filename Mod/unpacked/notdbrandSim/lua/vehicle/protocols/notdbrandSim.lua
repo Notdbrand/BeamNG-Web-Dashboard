@@ -54,7 +54,9 @@ local function getStructDefinition()
     int            checkengine;     // checkengine
     int            esc;             // esc
     int            tcs;             // tcs
+    int            ignitionLevel;   // ignitionLevel
     int            ev;              // Is EV
+    float          time;            // In-game time, 0.0 - 1.0
   ]]
 end
 
@@ -86,11 +88,23 @@ local function fillStruct(o, dtSim)
   o.checkengine = electrics.values.checkengine or 0
   o.esc = electrics.values.esc or 0
   o.tcs = electrics.values.tcs or 0
+  o.ignitionLevel = electrics.values.ignitionLevel or 0
   o.ev = ev
+  local time = tonumber(obj:getLastMailbox("notdbrandTime")) or 0
+  o.time = time
+  -- print(os.clock())
   -- print("=============")
-  -- for key, value in pairs(electrics.values) do
+  -- print("=============")
+  -- print("=============")
+  -- print("=============")
+  -- for key, value in pairs(v) do
 	-- print(key, value)
   -- end 
+end
+
+local function onExtensionLoaded()
+  obj:queueGameEngineLua('extensions.load("notdbrandTime")')
+  print("notdbrandSim: loaded notdbrandTime")
 end
 
 M.init = init
@@ -101,5 +115,6 @@ M.getMaxUpdateRate = getMaxUpdateRate
 M.getStructDefinition = getStructDefinition
 M.fillStruct = fillStruct
 M.isPhysicsStepUsed = isPhysicsStepUsed
+M.onExtensionLoaded = onExtensionLoaded()
 
 return M
